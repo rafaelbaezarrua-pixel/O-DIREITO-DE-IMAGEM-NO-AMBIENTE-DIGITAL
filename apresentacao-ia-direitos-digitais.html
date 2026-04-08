@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Direito de Imagem no Ambiente Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a14;
+    --surface: #12121f;
+    --surface2: #1a1a2e;
+    --accent: #ff3c6f;
+    --accent2: #7c3aed;
+    --accent3: #06b6d4;
+    --text: #f0f0f8;
+    --text-dim: #9090b0;
+    --green: #22c55e;
+    --yellow: #fbbf24;
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ---- SLIDES ---- */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8vh 48px 120px 48px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s ease, transform .5s ease;
+    transform: translateX(60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ---- NAV ---- */
+  .nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    z-index: 100;
+    background: rgba(10,10,20,0.8);
+    backdrop-filter: blur(12px);
+    padding: 12px 24px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 20px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    transition: background .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.1); }
+  .nav button.prev, .nav button.next {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .slide-counter {
+    font-size: 13px;
+    color: var(--text-dim);
+    min-width: 60px;
+    text-align: center;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .dot.active { background: var(--accent); width: 20px; border-radius: 10px; }
+
+  /* ---- TYPOGRAPHY ---- */
+  .syne { font-family: 'Syne', sans-serif; }
+  h1 { font-family: 'Syne', sans-serif; font-weight: 800; }
+  h2 { font-family: 'Syne', sans-serif; font-weight: 700; }
+
+  /* ---- SLIDE 1: CAPA ---- */
+  #s1 {
+    background: radial-gradient(ellipse at 30% 50%, rgba(124,58,237,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(255,60,111,0.2) 0%, transparent 60%),
+                var(--bg);
+    text-align: center;
+    justify-content: center;
+  }
+  #s1 .big-title {
+    font-size: clamp(48px, 7vw, 96px);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #ff3c6f, #7c3aed, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  #s1 .subtitle {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+  #s1 .badge {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(255,60,111,0.12);
+    border: 1px solid rgba(255,60,111,0.3);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    color: #ff8fab;
+    font-weight: 500;
+  }
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .float-emoji {
+    font-size: 64px;
+    margin-bottom: 24px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  /* ---- SLIDE 2: O QUE É IA ---- */
+  #s2 { background: var(--bg); }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+    max-width: 1000px;
+    align-items: center;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 28px;
+  }
+  .card.accent-border { border-color: rgba(255,60,111,0.3); }
+  .card.blue-border { border-color: rgba(6,182,212,0.3); }
+  .card.purple-border { border-color: rgba(124,58,237,0.3); }
+  .chip {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 12px;
+  }
+  .chip.red { background: rgba(255,60,111,0.15); color: #ff8fab; }
+  .chip.cyan { background: rgba(6,182,212,0.15); color: #67e8f9; }
+  .chip.purple { background: rgba(124,58,237,0.15); color: #c4b5fd; }
+  .chip.green { background: rgba(34,197,94,0.15); color: #86efac; }
+  .chip.yellow { background: rgba(251,191,36,0.15); color: #fde68a; }
+
+  .slide-title {
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .highlight { color: var(--accent); }
+  .highlight2 { color: var(--accent3); }
+  .highlight3 { color: #a78bfa; }
+
+  .ia-example {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .ia-icon {
+    font-size: 32px;
+    min-width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-radius: 12px;
+  }
+  .ia-text h3 {
+    font-size: 16px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .ia-text p { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---- SLIDE 3: DEEPFAKE ---- */
+  #s3 { background: radial-gradient(ellipse at 50% 0%, rgba(255,60,111,0.1) 0%, transparent 60%), var(--bg); }
+  .deepfake-visual {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 24px 0;
+    justify-content: center;
+  }
+  .photo-box {
+    width: 120px;
+    height: 140px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-box.real {
+    background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    border: 2px solid rgba(34,197,94,0.5);
+  }
+  .photo-box.fake {
+    background: linear-gradient(135deg, #5f1e1e, #8e2d2d);
+    border: 2px solid rgba(255,60,111,0.5);
+  }
+  .photo-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+  .real .photo-label { color: var(--green); }
+  .fake .photo-label { color: var(--accent); }
+  .arrow-magic {
+    font-size: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .arrow-magic span { font-size: 11px; color: var(--accent2); font-weight: 600; }
+
+  .warning-box {
+    background: rgba(255,60,111,0.08);
+    border: 1px solid rgba(255,60,111,0.25);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ---- SLIDE 4: CASO GROK ---- */
+  #s4 { background: var(--bg); }
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+  .timeline-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-left: 8px;
+  }
+  .t-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .t-content { flex: 1; padding-top: 4px; }
+  .t-content strong { font-family: 'Syne', sans-serif; font-size: 15px; display: block; margin-bottom: 4px; }
+  .t-content p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,60,111,0.1);
+    border: 1px solid rgba(255,60,111,0.2);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ff8fab;
+    margin-top: 8px;
+  }
+
+  /* ---- SLIDE 5: LEGISLAÇÃO ---- */
+  #s5 { background: radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.15) 0%, transparent 50%), var(--bg); }
+  .law-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .law-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .law-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+  .law-card.l1::before { background: var(--accent2); }
+  .law-card.l2::before { background: var(--accent); }
+  .law-card.l3::before { background: var(--accent3); }
+  .law-card.l4::before { background: var(--green); }
+  .law-card h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; padding-left: 12px; }
+  .law-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; padding-left: 12px; }
+  .penalty-box {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .penalty-box .big-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--red);
+  }
+  .penalty-box p { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
+
+  /* ---- SLIDE 6: DIREITO DE IMAGEM ---- */
+  #s6 { background: var(--bg); }
+  .rights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .right-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: border-color .3s, transform .3s;
+    cursor: default;
+  }
+  .right-card:hover {
+    border-color: rgba(255,60,111,0.3);
+    transform: translateY(-4px);
+  }
+  .right-card .icon { font-size: 40px; margin-bottom: 12px; }
+  .right-card h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .right-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---- SLIDE 7: COMO SE PROTEGER ---- */
+  #s7 { background: radial-gradient(ellipse at 20% 80%, rgba(6,182,212,0.12) 0%, transparent 50%), var(--bg); }
+  .protect-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 800px;
+    width: 100%;
+  }
+  .protect-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: border-color .3s;
+  }
+  .protect-item:hover { border-color: rgba(6,182,212,0.3); }
+  .p-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent3), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .protect-item .p-text strong { font-family: 'Syne', sans-serif; font-size: 15px; display: block; margin-bottom: 4px; }
+  .protect-item .p-text p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---- SLIDE 8: O QUE FAZER SE VIRAR VÍTIMA ---- */
+  #s8 { background: radial-gradient(ellipse at 50% 100%, rgba(255,60,111,0.12) 0%, transparent 60%), var(--bg); }
+  .steps-row {
+    display: flex;
+    gap: 16px;
+    max-width: 1000px;
+    width: 100%;
+    justify-content: center;
+  }
+  .step-card {
+    flex: 1;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 24px 18px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .step-num {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-card .icon { font-size: 36px; margin: 8px 0 12px; }
+  .step-card h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .step-card p { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---- SLIDE 9: QUIZ ---- */
+  #s9 { background: radial-gradient(ellipse at 60% 30%, rgba(124,58,237,0.2) 0%, transparent 60%), var(--bg); }
+  .quiz-container {
+    max-width: 680px;
+    width: 100%;
+    text-align: center;
+  }
+  .quiz-question {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .quiz-btn {
+    background: var(--surface);
+    border: 2px solid rgba(255,255,255,0.06);
+    color: var(--text);
+    padding: 16px 24px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-align: left;
+    transition: all .25s;
+  }
+  .quiz-btn:hover:not(:disabled) {
+    border-color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+  }
+  .quiz-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.1); color: #86efac; }
+  .quiz-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: #fca5a5; }
+  .quiz-feedback {
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 16px;
+    border-radius: 12px;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: #86efac; }
+  .quiz-feedback.fail { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+  .quiz-nav-btns { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+  .q-progress { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+
+  /* ---- SLIDE 10: CONCLUSÃO ---- */
+  #s10 {
+    background: radial-gradient(ellipse at 30% 50%, rgba(124,58,237,0.2), transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(6,182,212,0.15), transparent 60%),
+                var(--bg);
+    text-align: center;
+    justify-content: center;
+  }
+  .conclusion-points {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }
+  .c-point {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    max-width: 200px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .c-point .ci { font-size: 28px; margin-bottom: 8px; }
+  .sources-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .source-chip {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* ---- PROGRESS BAR ---- */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--accent), var(--accent2), var(--accent3));
+    transition: width .4s ease;
+    z-index: 200;
+  }
+
+  /* ---- RESPONSIVE TWEAKS ---- */
+  @media (max-width: 768px) {
+    .two-col, .law-grid, .rights-grid, .steps-row { grid-template-columns: 1fr !important; }
+    .steps-row { flex-direction: column; }
+    .slide { padding: 60px 24px 100px 24px; }
+    .big-title { font-size: clamp(32px, 10vw, 48px) !important; }
+    .slide-title { font-size: 28px !important; margin-bottom: 20px; }
+    .rights-grid { grid-template-columns: 1fr !important; }
+    .c-point { max-width: 100%; width: 100%; }
+    .nav { width: 90%; bottom: 20px; padding: 10px 16px; }
+    .nav button { padding: 6px 12px; font-size: 16px; }
+    .nav button.prev, .nav button.next { font-size: 18px; }
+    .quiz-question { font-size: 18px; }
+    .float-emoji { font-size: 48px; }
+  }
+
+  @media (max-width: 480px) {
+    .slide { padding: 40px 16px 100px 16px; }
+    .card { padding: 20px; }
+    .ia-icon { min-width: 40px; height: 40px; font-size: 24px; }
+    .quiz-btn { padding: 12px 16px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<!-- ==================== SLIDE 1: CAPA ==================== -->
+<div class="slide active" id="s1">
+  <div class="grid-bg"></div>
+  <div class="float-emoji">⚖️</div>
+  <div class="badge" style="margin-bottom: 20px; background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.3); color: #a78bfa;">CENTRO UNIVERSITÁRIO CURITIBA</div>
+  <div class="big-title" style="font-size: clamp(32px, 5vw, 64px);">O Direito de Imagem no<br>Ambiente Digital</div>
+  <p class="subtitle">Proteção Jurídica Integrada no Ordenamento Brasileiro</p>
+  <div class="badge">📚 Trabalho de Extensão Universitária · Direito · 2026</div>
+</div>
+
+<!-- ==================== SLIDE 2: CONCEITOS ==================== -->
+<div class="slide" id="s2">
+  <h2 class="slide-title">Sua Imagem: <span class="highlight">Muito além do seu rosto</span></h2>
+  <div class="two-col">
+    <div>
+      <div class="ia-example">
+        <div class="ia-icon">🤳</div>
+        <div class="ia-text">
+          <h3>Sua "Foto de Perfil"</h3>
+          <p><strong>Imagem-Retrato:</strong> É o seu rosto, seu corpo e tudo que faz as pessoas te reconhecerem fisicamente.</p>
+        </div>
+      </div>
+      <div class="ia-example">
+        <div class="ia-icon">💬</div>
+        <div class="ia-text">
+          <h3>Sua "Bio" e Fama</h3>
+          <p><strong>Imagem-Atributo:</strong> É a sua reputação. O que as pessoas pensam de você, sua fama na escola ou na internet.</p>
+        </div>
+      </div>
+      <div class="ia-example">
+        <div class="ia-icon">📜</div>
+        <div class="ia-text">
+          <h3>O que a lei diz?</h3>
+          <p>Art. 11 do Código Civil: Você não pode "vender" ou abrir mão totalmente desses direitos. Eles são parte de quem você é.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card accent-border" style="text-align:center; padding: 36px 28px;">
+      <div style="font-size:72px; margin-bottom: 16px;">💡</div>
+      <div class="chip purple">Dica de Ouro</div>
+      <p style="font-size:14px; color:var(--text-dim); line-height:1.7;">Usar a foto de alguém sem permissão <strong>já é errado</strong>, mesmo que você não ganhe dinheiro com isso ou não queira "ofender".</p>
+      <div style="margin-top:20px; padding:14px; background:var(--surface2); border-radius:12px; font-size:13px; color:var(--text-dim);">
+        📜 <strong>Tartuce e Gonçalves:</strong> Especialistas dizem que sua imagem é sagrada e deve ser protegida.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: PROTEÇÃO CIVIL ==================== -->
+<div class="slide" id="s3">
+  <h2 class="slide-title">Sua Imagem: <span class="highlight2">Seu Espaço, Suas Regras</span></h2>
+  <div class="law-grid">
+    <div class="law-card l2">
+      <div class="chip red" style="margin-left:12px;">Constituição (Art. 5º, X)</div>
+      <h3>Inviolável!</h3>
+      <p>Ninguém pode invadir sua intimidade ou usar sua imagem sem você deixar. É um direito fundamental de todo brasileiro.</p>
+    </div>
+    <div class="law-card l1">
+      <div class="chip purple" style="margin-left:12px;">Dano Automático</div>
+      <h3>"In Re Ipsa"</h3>
+      <p>Termo difícil para algo simples: se usaram sua imagem errado, a justiça entende que você sofreu <strong>dano moral</strong> na hora, sem precisar provar que ficou triste.</p>
+    </div>
+  </div>
+  <div class="warning-box" style="border-color: var(--accent2);">
+    🤝 <strong>Respeito no Digital:</strong> Trate a imagem do colega como você gostaria que tratassem a sua. A dignidade humana vale tanto no pátio da escola quanto no grupo do WhatsApp.
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: RESPONSABILIDADE PENAL ==================== -->
+<div class="slide" id="s4">
+  <h2 class="slide-title">Internet <span class="highlight">não é terra sem lei!</span></h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="t-dot" style="background: rgba(239,68,68,0.2); color: var(--red);">👮</div>
+      <div class="t-content">
+        <strong>Espalhar fotos íntimas é CRIME!</strong>
+        <p>Art. 218-C (Código Penal): Divulgar nudez ou cenas de sexo sem autorização (Revenge Porn). <strong>Pena: 1 a 5 anos de prisão.</strong></p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="t-dot" style="background: rgba(124,58,237,0.2); color: #a78bfa;">🎭</div>
+      <div class="t-content">
+        <strong>Deepfakes (Figurinhas e Vídeos falsos)</strong>
+        <p>A Lei 14.811/2024 agora aumenta a pena se usarem <strong>IA</strong> para criar falsas imagens íntimas. Fique atento!</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="t-dot" style="background: rgba(6,182,212,0.2); color: var(--accent3);">🕵️</div>
+      <div class="t-content">
+        <strong>Invasão de Dispositivos</strong>
+        <p>Lei Carolina Dieckmann: Entrar no celular ou PC de outra pessoa para pegar fotos é crime punido por lei.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: DIREITOS AUTORAIS ==================== -->
+<div class="slide" id="s5">
+  <h2 class="slide-title">De quem é a foto? <span class="highlight3">A Regra da Dupla Chave</span></h2>
+  <div class="card" style="max-width: 800px; width: 100%; margin-bottom: 24px;">
+    <div class="chip yellow">Lei de Direitos Autorais (9.610/98)</div>
+    <p style="font-size: 16px; margin: 12px 0;">Imagine: Seu amigo tira uma foto sua na escola. Para postar, precisa de <strong>duas chaves</strong>:</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px;">
+      <div style="background: var(--surface2); padding: 15px; border-radius: 12px;">
+        <strong style="color: var(--accent);">🔑 Chave 1: VOCÊ</strong>
+        <p style="font-size: 13px; color: var(--text-dim);">Porque a imagem é do seu rosto (Direito de Imagem).</p>
+      </div>
+      <div style="background: var(--surface2); padding: 15px; border-radius: 12px;">
+        <strong style="color: var(--accent3);">🔑 Chave 2: SEU AMIGO</strong>
+        <p style="font-size: 13px; color: var(--text-dim);">Porque ele que "criou" a foto (Direito Autoral).</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size: 14px; color: var(--text-dim); text-align: center;">
+    ⚠️ <strong>Importante:</strong> Só porque a foto está no Google ou no Instagram, não significa que você pode pegar e usar como quiser!
+  </p>
+</div>
+
+<!-- ==================== SLIDE 6: MARCO CIVIL ==================== -->
+<div class="slide" id="s6">
+  <h2 class="slide-title"><span class="highlight2">Como apagar</span> algo da internet?</h2>
+  <div class="rights-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="right-card">
+      <div class="icon">🚫</div>
+      <h3>Denúncia Direta</h3>
+      <p>As redes sociais têm botões para você pedir a remoção de conteúdos ilegais ou que te ofendam.</p>
+    </div>
+    <div class="right-card" style="border-color: var(--accent);">
+      <div class="icon">📨</div>
+      <h3>Notificação (Aviso)</h3>
+      <p>Para **fotos íntimas**, você não precisa ir ao juiz primeiro. Avisar a rede social (Notificação Extrajudicial) já obriga eles a agirem rápido!</p>
+    </div>
+  </div>
+  <div class="penalty-box" style="background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.2);">
+    <p style="color: #a78bfa;">O **Marco Civil da Internet** é como a "Constituição" do computador no Brasil. Ele protege você contra abusos de plataformas e outros usuários.</p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: LGPD ==================== -->
+<div class="slide" id="s7">
+  <h2 class="slide-title">Imagem como <span class="highlight">Dado Pessoal</span> (LGPD)</h2>
+  <div class="two-col">
+    <div class="card purple-border">
+      <div class="chip purple">Dado Sensível</div>
+      <h3>Biometria Facial</h3>
+      <p style="font-size: 14px; color: var(--text-dim);">A imagem que identifica uma pessoa é dado pessoal. Se capturada para reconhecimento facial, é <strong>dado sensível</strong>.</p>
+    </div>
+    <div class="card blue-border">
+      <div class="chip cyan">Bases Legais</div>
+      <ul style="font-size: 13px; color: var(--text-dim); text-align: left; list-style: none; padding: 0;">
+        <li style="margin-bottom: 8px;">✅ Consentimento explícito</li>
+        <li style="margin-bottom: 8px;">✅ Legítimo interesse</li>
+        <li style="margin-bottom: 8px;">✅ Proteção da vida/segurança</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top: 24px; text-align: center;">
+    <div class="badge">ANPD: Autoridade fiscalizadora de dados no Brasil</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: CASOS PRÁTICOS ==================== -->
+<div class="slide" id="s8">
+  <h2 class="slide-title">Fique de Olho: <span class="highlight3">Exemplos Reais</span></h2>
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="icon">👶</div>
+      <h3>"Sharenting"</h3>
+      <p>Pais postarem fotos dos filhos toda hora. A criança também tem direito à privacidade (Art. 17 do ECA).</p>
+    </div>
+    <div class="step-card">
+      <div class="icon">🤡</div>
+      <h3>Meme ou Crime?</h3>
+      <p>Fazer figurinha/meme de alguém para humilhar pode gerar processo e multas pesadas.</p>
+    </div>
+    <div class="step-card">
+      <div class="icon">💻</div>
+      <h3>IA Perigosa</h3>
+      <p>Deepfakes que mudam seu rosto em vídeos. Identificar quem criou no anonimato é o maior desafio atual.</p>
+    </div>
+  </div>
+  <div class="warning-box" style="margin-top: 24px; border-color: var(--accent3); background: rgba(6,182,212,0.05); font-size: 13px; max-width: 900px;">
+    📢 <strong>Exceções (Quando pode?):</strong> O direito de imagem não é absoluto! A lei permite o uso sem autorização em casos de <strong>interesse público</strong>, <strong>fins jornalísticos</strong>, <strong>científicos</strong> ou <strong>históricos</strong>, desde que a honra da pessoa seja respeitada.
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: QUIZ ==================== -->
+<div class="slide" id="s9">
+  <h2 class="slide-title" style="margin-bottom:8px;">🧠 Quiz — <span class="highlight3">Teste seu conhecimento!</span></h2>
+  <div class="quiz-container">
+    <div class="q-progress" id="qProgress">Pergunta 1 de 5</div>
+    <div class="quiz-question" id="quizQ"></div>
+    <div class="quiz-options" id="quizOpts"></div>
+    <div class="quiz-feedback" id="quizFb"></div>
+    <div class="quiz-nav-btns">
+      <button id="nextQBtn" class="quiz-btn" style="display:none; max-width:200px; text-align:center; border-color:var(--accent2); color:var(--accent3);" onclick="nextQuestion()">Próxima →</button>
+    </div>
+    <div id="quizResult" style="display:none; text-align:center; margin-top:20px;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: CONCLUSÃO ==================== -->
+<div class="slide" id="s10">
+  <div class="grid-bg"></div>
+  <div style="font-size:48px; margin-bottom:16px;">🛡️</div>
+  <h2 class="slide-title" style="margin-bottom:12px;">Seja o dono da sua <span class="highlight">Imagem</span></h2>
+  <div class="conclusion-points" style="font-size:13px;">
+    <div class="c-point">Pense duas vezes antes de postar a foto de um colega</div>
+    <div class="c-point">Nunca compartilhe conteúdos íntimos de terceiros</div>
+    <div class="c-point">Viu algo errado? Denuncie às plataformas e guarde as provas (Prints)</div>
+    <div class="c-point">Se precisar de ajuda emocional ou denúncia segura: Ligue 181 ou acesse SafeNet</div>
+  </div>
+  <div style="font-size:11px; color:var(--text-dim); margin-top:20px;">REFERÊNCIAS ACADÊMICAS (UniCuritiba):</div>
+  <div class="sources-row" style="opacity: 0.8; transform: scale(0.9);">
+    <div class="source-chip">Tartuce</div>
+    <div class="source-chip">Doneda</div>
+    <div class="source-chip">Moraes</div>
+    <div class="source-chip">Gonçalves</div>
+    <div class="source-chip">Nucci</div>
+    <div class="source-chip">Marco Civil</div>
+    <div class="source-chip">LGPD</div>
+    <div class="source-chip">CF/88</div>
+  </div>
+</div>
+
+<!-- ==================== NAVIGATION ==================== -->
+<div class="nav">
+  <button class="prev" onclick="changeSlide(-1)">←</button>
+  <div id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="next" onclick="changeSlide(1)">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let current = 0;
+
+// Quiz data
+const questions = [
+  {
+    q: "Se um colega criar um meme ou figurinha com sua foto para te humilhar, a justiça brasileira diz que:",
+    opts: [
+      "É apenas uma 'brincadeira' e não tem problema",
+      "É violação do seu direito de imagem e pode gerar processo por dano moral",
+      "Você só pode reclamar se for famoso",
+      "Não há nada a fazer pois a imagem caiu na internet"
+    ],
+    correct: 1,
+    fb: "✅ Correto! O Direito de Imagem protege você contra humilhações. O dano é considerado automático pela lei (In Re Ipsa)."
+  },
+  {
+    q: "O que você deve fazer ao ver fotos íntimas de outra pessoa circulando no grupo?",
+    opts: [
+      "Compartilhar com outros colegas para avisar",
+      "Não compartilhar, denunciar à plataforma e avisar um adulto de confiança",
+      "Salvar a foto no celular",
+      "Zombar da pessoa retratada"
+    ],
+    correct: 1,
+    fb: "✅ Correto! Compartilhar conteúdo íntimo sem permissão é CRIME (Art. 218-C do Código Penal). Interrompa a cadeia de divulgação!"
+  },
+  {
+    q: "Seu rosto capturado para um filtro de IA é considerado pela lei LGPD como:",
+    opts: [
+      "Um dado sensível (biométrico) que deve ser bem protegido",
+      "Um dado público que qualquer empresa pode usar",
+      "Apenas uma diversão sem valor legal",
+      "Propriedade da empresa que criou o filtro"
+    ],
+    correct: 0,
+    fb: "✅ Correto! Sua biometria facial é o dado mais importante que você tem. A LGPD exige que as empresas peçam seu consentimento."
+  },
+  {
+    q: "Se um amigo tirar uma foto sua na escola e quiser postar no Instagram, o que é necessário?",
+    opts: [
+      "Apenas a vontade dele, pois ele que tirou a foto",
+      "Sua autorização, pois seu rosto aparece nela",
+      "Permissão da escola apenas",
+      "Não precisa de permissão de ninguém"
+    ],
+    correct: 1,
+    fb: "✅ Correto! É a 'dupla chave': ele tem o direito autoral, mas você tem o direito da sua imagem. É preciso respeito e autorização."
+  },
+  {
+    q: "Qual lei protege você contra abusos na internet e diz como remover conteúdos?",
+    opts: [
+      "Lei Seca",
+      "Lei de Trânsito",
+      "Marco Civil da Internet",
+      "Código do Consumidor"
+    ],
+    correct: 2,
+    fb: "✅ Correto! O Marco Civil da Internet é a lei que guia as regras do jogo no mundo digital brasileiro."
+  }
+];
+
+let qIndex = 0;
+let score = 0;
+let answered = false;
+
+function renderQuestion() {
+  const q = questions[qIndex];
+  document.getElementById('qProgress').textContent = `Pergunta ${qIndex + 1} de ${questions.length}`;
+  document.getElementById('quizQ').textContent = q.q;
+  const opts = document.getElementById('quizOpts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-btn';
+    btn.textContent = `${['A', 'B', 'C', 'D'][i]}) ${opt}`;
+    btn.onclick = () => answerQ(i, btn);
+    opts.appendChild(btn);
+  });
+  document.getElementById('quizFb').className = 'quiz-feedback';
+  document.getElementById('quizFb').textContent = '';
+  document.getElementById('nextQBtn').style.display = 'none';
+  document.getElementById('quizResult').style.display = 'none';
+  answered = false;
+}
+
+function answerQ(idx, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[qIndex];
+  const allBtns = document.getElementById('quizOpts').querySelectorAll('.quiz-btn');
+  allBtns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.className = 'quiz-btn correct';
+  });
+  const fb = document.getElementById('quizFb');
+  if (idx === q.correct) {
+    score++;
+    btn.className = 'quiz-btn correct';
+    fb.className = 'quiz-feedback ok show';
+  } else {
+    btn.className = 'quiz-btn wrong';
+    fb.className = 'quiz-feedback fail show';
+  }
+  fb.textContent = q.fb;
+  document.getElementById('nextQBtn').style.display = qIndex < questions.length - 1 ? 'block' : 'none';
+  if (qIndex === questions.length - 1) {
+    setTimeout(showResult, 600);
+  }
+}
+
+function nextQuestion() {
+  qIndex++;
+  renderQuestion();
+}
+
+function showResult() {
+  const res = document.getElementById('quizResult');
+  res.style.display = 'block';
+  const emoji = score >= 4 ? '🏆' : score >= 2 ? '👍' : '📚';
+  const msg = score >= 4 ? 'Excelente! Você está bem preparado(a)!' : score >= 2 ? 'Bom! Continue aprendendo.' : 'Hora de revisar o conteúdo!';
+  res.innerHTML = `<div style="font-size:40px;">${emoji}</div><div style="font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin:8px 0;">${score}/${questions.length} acertos</div><div style="color:var(--text-dim); font-size:14px;">${msg}</div>`;
+  document.getElementById('nextQBtn').style.display = 'none';
+}
+
+// ---- DOTS ----
+function buildDots() {
+  const d = document.getElementById('dots');
+  d.style.display = 'flex';
+  d.style.gap = '6px';
+  d.style.alignItems = 'center';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    d.appendChild(dot);
+  }
+}
+
+function updateDots() {
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.className = 'dot' + (i === current ? ' active' : '');
+  });
+}
+
+function goTo(n) {
+  if (n < 0 || n >= totalSlides) return;
+  slides[current].classList.add('exit');
+  slides[current].classList.remove('active');
+  setTimeout(() => slides[current < n ? current : current].classList.remove('exit'), 500);
+  current = n;
+  slides[current].classList.add('active');
+  slides[current].classList.remove('exit');
+  updateDots();
+  document.getElementById('counter').textContent = `${current + 1} / ${totalSlides}`;
+  document.getElementById('progressBar').style.width = `${((current + 1) / totalSlides) * 100}%`;
+
+  // Init quiz on slide 9
+  if (current === 8 && qIndex === 0) renderQuestion();
+}
+
+function changeSlide(dir) { goTo(current + dir); }
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+  if (e.key === 'ArrowLeft') changeSlide(-1);
+});
+
+buildDots();
+document.getElementById('progressBar').style.width = `${(1 / totalSlides) * 100}%`;
+</script>
+</body>
+</html>
